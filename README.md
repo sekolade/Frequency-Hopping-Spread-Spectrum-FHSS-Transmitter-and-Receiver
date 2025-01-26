@@ -1,21 +1,29 @@
-# EE430 Term Project: Frequency-Hopping Spread Spectrum Communication System
+# EE430 Term Project: Frequency-Hopping Spread Spectrum Transmitter and Receiver
 
 ## Project Overview
-This repository contains the implementation of a Frequency-Hopping Spread Spectrum (FHSS) communication system as part of the EE430 Digital Signal Processing course at METU. The project involves the design of a transmitter and receiver system capable of generating, transmitting, receiving, and decoding FHSS signals. It covers both Part 1 and Part 2 requirements as outlined in the project description.
+This repository contains the implementation of a Frequency-Hopping Spread Spectrum (FHSS) communication system developed as part of the EE430 Digital Signal Processing course at METU. The project involves creating MATLAB-based transmitter and receiver systems with graphical user interfaces (GUIs). These systems enable the generation, transmission, reception, and decoding of FHSS signals, meeting the requirements outlined in the course project description.
 
-### Features
+---
+
+## Features
 1. **FHSS Transmitter and Receiver**:
    - Implements 2-FSK, 4-FSK, and 8-FSK modulation schemes.
-   - Supports three communication categories with different parameters (hop period, frequency separation, etc.).
+   - Supports three communication categories with distinct parameters (hop period, frequency separation, etc.).
 
 2. **Noise Reduction**:
-   - Employs bandpass Butterworth filters and cross-correlation techniques to reduce noise.
+   - Uses bandpass Butterworth filters and cross-correlation techniques to mitigate noise.
 
 3. **Graphical User Interface (GUI)**:
-   - User-friendly GUIs for both transmitter and receiver to input parameters and visualize results.
+   - User-friendly GUIs designed using MATLAB's App Designer for both the transmitter and receiver.
 
 4. **Spectrogram Analysis**:
-   - Time-frequency representation of signals using Short-Time Fourier Transform (STFT).
+   - Includes time-frequency representation of signals using Short-Time Fourier Transform (STFT).
+
+5. **Category Support**:
+   - Fully functional transmitter and receiver for all three categories:
+     - **Category 1:** Basic 2-FSK communication.
+     - **Category 2:** Intermediate 4-FSK communication.
+     - **Category 3:** Advanced 8-FSK communication.
 
 ---
 
@@ -32,42 +40,42 @@ This repository contains the implementation of a Frequency-Hopping Spread Spectr
 
 ---
 
-## System Requirements
-- MATLAB R2022b or later
-- Signal Processing Toolbox
-
----
-
 ## How to Run the Project
 
-### Setting Up the Transmitter
+### Transmitter Setup
 1. Open the `transmitter.mlapp` file in MATLAB's App Designer.
-2. Enter the desired text message, select modulation parameters (e.g., hop period, M-FSK, etc.), and configure spectrogram settings.
-3. Generate the FHSS signal and visualize the spectrogram on the GUI.
+2. Enter a text message and configure signal parameters such as:
+   - Modulation order (M-FSK)
+   - Hop period (Th)
+   - Frequency separation (∆f)
+3. Generate the FHSS signal and visualize its spectrogram.
+4. Play the generated signal through your PC speakers for transmission.
 
-### Setting Up the Receiver
+### Receiver Setup
 1. Open the `receiver.mlapp` file in MATLAB's App Designer.
-2. Configure the sampling rate and recording duration.
-3. Record the transmitted signal, decode it, and view the spectrogram before and after noise reduction.
+2. Configure recording parameters such as sampling rate and duration.
+3. Record the transmitted signal.
+4. Visualize the spectrogram of the received signal (both before and after noise reduction).
+5. Decode the received signal to retrieve the transmitted text message.
 
 ---
 
-## Project Details
+## FHSS Communication Details
 
-### 1. Frequency-Hopping Spread Spectrum (FHSS)
-FHSS spreads the information signal over a wider bandwidth by rapidly changing carrier frequencies. This method offers several advantages:
+### Frequency-Hopping Spread Spectrum (FHSS)
+FHSS is a method that spreads a signal over a wide bandwidth by rapidly changing its carrier frequency. Key advantages include:
 - Resistance to narrowband interference.
-- Difficulty in interception and jamming.
-- Minimal interference with other narrowband communications.
+- Difficulty of interception and jamming.
+- Minimal mutual interference with conventional transmissions.
 
-### 2. Modulation Schemes
-The project uses the following modulation schemes:
+### Modulation Schemes
+The project supports three modulation schemes:
 - **2-FSK:** Maps each bit to one of two frequencies.
 - **4-FSK:** Maps two bits to one of four frequencies.
 - **8-FSK:** Maps three bits to one of eight frequencies.
 
-### 3. Categories of Communication
-The system supports three categories:
+### Communication Categories
+The system is designed to support three categories with different signal parameters:
 
 | Category | Hop Period (s) | Modulation | Frequency Separation (Hz) | Bandwidth (Hz) | Min Data Length |
 |----------|----------------|------------|----------------------------|----------------|-----------------|
@@ -75,9 +83,12 @@ The system supports three categories:
 | 2        | 0.75           | 4-FSK      | 150                        | 7000           | 20              |
 | 3        | 0.50           | 8-FSK      | 200                        | 10000          | 30              |
 
-### 4. Noise Reduction
-- Bandpass Butterworth filters isolate the frequency bands of interest.
-- Cross-correlation detects pilot tones for synchronization.
+### Noise Reduction Techniques
+- **Bandpass Butterworth Filters:** Remove out-of-band noise.
+- **Cross-Correlation:** Detect pilot tones for synchronization.
+
+### Synchronization
+Pilot tones are transmitted before the actual signal to synchronize the transmitter and receiver. The receiver uses these tones to align its internal clock with the transmitted signal.
 
 ---
 
@@ -103,6 +114,14 @@ The system supports three categories:
 
 ---
 
+## Project Demonstrations
+During the project demonstration, you are expected to:
+1. Show the functionality of both GUIs for all categories.
+2. Provide examples of signal generation, transmission, reception, and decoding.
+3. Demonstrate synchronization and noise reduction methods.
+
+---
+
 ## Contributing
 Contributions are welcome! If you have suggestions or improvements, feel free to open an issue or submit a pull request.
 
@@ -110,3 +129,4 @@ Contributions are welcome! If you have suggestions or improvements, feel free to
 
 ## License
 This project is for educational purposes only and is not licensed for commercial use.
+
