@@ -99,7 +99,7 @@ Pilot tones are transmitted before the actual signal to synchronize the transmit
   - Message: `101101`
   - Spectrogram:
 
-    ![Transmitter Spectrogram](figures/transmitter_spectrogram.png)
+    ![Transmitter Spectrogram](figures/transmitter_spectrogram.PNG)
 
 ### Receiver Output
 - **Category 1 Example:**
