@@ -96,14 +96,14 @@ Pilot tones are transmitted before the actual signal to synchronize the transmit
 
 ### Transmitter Output
 - **Category 1 Example:**
-  - Message: `101101`
+  - Message: `10000101101001110010`
   - Spectrogram:
 
     ![Transmitter Spectrogram](figures/transmitter_spectrogram.PNG)
 
 ### Receiver Output
 - **Category 1 Example:**
-  - Decoded Message: `101101`
+  - Decoded Message: `10000101101001110010`
   - Spectrograms:
 
 
