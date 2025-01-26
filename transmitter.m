@@ -1,31 +1,17 @@
 function [audioSignal,txSpectrogram] =  transmitter(category, message, samplingRate, studentNumber)
-
-
 %     
-
-
 %% Main Script (Example Usage)
 % User Inputs
 %category = 1;                      % Category (1, 2, or 3)
 %message = '101101';              % Message (binary string)
 %samplingRate = 44100;              % Sampling rate
 %studentNumber = '2518504';         % Student number
-
 % Generate FHSS Signal
 [transmittedSignal, txSpectrogram] = generateFHSSSignal(category, message, samplingRate, studentNumber);
-
 % Simulate transmission (add noise if necessary)
-
 % Display results
 disp('Original Message: ' + string(message));
-% Future: Decode and validate received message
-% Çalınacak ses için sinyali gerçek kısmına indirgeme
 audioSignal = real(transmittedSignal);
-
-% Ses çalma
-%disp('FHSS sinyali hoparlörden çalınıyor...');
-%sound(audioSignal, samplingRate); % Ses çalma (samplingRate ile)
-
 function frequencyTable = generateFrequencyTable(category, studentNumber)
     % Extract student number components
     N7 = str2double(studentNumber(end));
@@ -50,7 +36,6 @@ function frequencyTable = generateFrequencyTable(category, studentNumber)
             error('Invalid category. Choose 1, 2, or 3.');
     end
 end
-
 function binaryData = encodeMessage(message, category)
     % Encode binary message based on FSK type
     switch category
@@ -92,22 +77,17 @@ function binaryData = encodeMessage(message, category)
             error('Invalid category. Choose 1, 2, or 3.');
     end
 end
-
 function [signal, spectrogram3] = generateFHSSSignal(category, message, samplingRate, studentNumber)
     % Parameters for each category
     params.hopPeriod = [1.0, 0.75, 0.50]; % Hop periods for categories
     params.deltaF = [100, 150, 200];      % Delta F values for categories
-    
     % Select parameters for the given category
     hopPeriod = params.hopPeriod(category);
     deltaF = params.deltaF(category);
-    
     % Generate frequency table
     frequencyTable = generateFrequencyTable(category, studentNumber);
-    
     % Encode message
     binaryData = encodeMessage(message, category);
-    
     % Generate random hop indices
     rng(42, 'twister'); % For reproducibility
     numHops = length(binaryData);
@@ -115,13 +95,11 @@ function [signal, spectrogram3] = generateFHSSSignal(category, message, sampling
     FrequencyTable= frequencyTable(hopIndices)
    % hopIndices = [2,9,4,6,4];
     % Initialize signal
-
     % Generate Pilot Tone
     pilotFreq = 19500; % Example pilot tone frequency (Hz)
     pilotDuration = 0.25; % Pilot tone duration (seconds)
     tPilot = 0:1/samplingRate:pilotDuration - 1/samplingRate;
     pilotTone = sin(2 * pi * pilotFreq * tPilot);
-    
     % Initialize signal with pilot tone
     signal = pilotTone;
     freqs = [];
@@ -142,14 +120,6 @@ function [signal, spectrogram3] = generateFHSSSignal(category, message, sampling
     windowLength = round(samplingRate * hopPeriod / 4);
     overlapLength = round(windowLength * 0.5);
     fftLength = 2^nextpow2(windowLength);
-
-       %11025
-
-       % 5513
-
-      % 16384
     spectrogram3 = {signal,samplingRate,(windowLength),overlapLength,fftLength,minf,maxf};
-
-    
 end
 end

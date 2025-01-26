@@ -10,16 +10,20 @@ This repository contains the implementation of a Frequency-Hopping Spread Spectr
    - Implements 2-FSK, 4-FSK, and 8-FSK modulation schemes.
    - Supports three communication categories with distinct parameters (hop period, frequency separation, etc.).
 
-2. **Noise Reduction**:
+2. **Pseudo-Random Frequency Hopping**:
+   - Utilizes pseudo-random number generation to select hop frequencies from predefined tables.
+   - Ensures reproducibility of sequences through seed-based random number generation.
+
+3. **Noise Reduction**:
    - Uses bandpass Butterworth filters and cross-correlation techniques to mitigate noise.
 
-3. **Graphical User Interface (GUI)**:
+4. **Graphical User Interface (GUI)**:
    - User-friendly GUIs designed using MATLAB's App Designer for both the transmitter and receiver.
 
-4. **Spectrogram Analysis**:
+5. **Spectrogram Analysis**:
    - Includes time-frequency representation of signals using Short-Time Fourier Transform (STFT).
 
-5. **Category Support**:
+6. **Category Support**:
    - Fully functional transmitter and receiver for all three categories:
      - **Category 1:** Basic 2-FSK communication.
      - **Category 2:** Intermediate 4-FSK communication.
@@ -48,15 +52,16 @@ This repository contains the implementation of a Frequency-Hopping Spread Spectr
    - Modulation order (M-FSK)
    - Hop period (Th)
    - Frequency separation (∆f)
-3. Generate the FHSS signal and visualize its spectrogram.
-4. Play the generated signal through your PC speakers for transmission.
+3. Generate the FHSS signal using the pseudo-random number generator to select hop frequencies.
+4. Visualize the generated signal's spectrogram on the GUI.
+5. Play the generated signal through your PC speakers for transmission.
 
 ### Receiver Setup
 1. Open the `receiver.mlapp` file in MATLAB's App Designer.
 2. Configure recording parameters such as sampling rate and duration.
-3. Record the transmitted signal.
+3. Record the transmitted signal using your PC's microphone.
 4. Visualize the spectrogram of the received signal (both before and after noise reduction).
-5. Decode the received signal to retrieve the transmitted text message.
+5. Decode the received signal to retrieve the transmitted text message. Synchronize the receiver using the pilot tone or detect hop frequencies in real-time.
 
 ---
 
@@ -82,6 +87,11 @@ The system is designed to support three categories with different signal paramet
 | 1        | 1.0            | 2-FSK      | 100                        | 4000           | 5               |
 | 2        | 0.75           | 4-FSK      | 150                        | 7000           | 20              |
 | 3        | 0.50           | 8-FSK      | 200                        | 10000          | 30              |
+
+### Pseudo-Random Frequency Generation
+- A table of hop frequencies is generated based on student numbers.
+- Pseudo-random numbers are used as indices to select frequencies from the table.
+- Seed-based random number generation ensures reproducibility, allowing both transmitter and receiver to follow the same hopping sequence.
 
 ### Noise Reduction Techniques
 - **Bandpass Butterworth Filters:** Remove out-of-band noise.

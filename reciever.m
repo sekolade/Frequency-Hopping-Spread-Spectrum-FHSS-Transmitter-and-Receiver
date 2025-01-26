@@ -4,14 +4,11 @@ function [rxspectrogram,rxspectrogramnon,category] = reciever(samplingRate,durat
 %samplingRate = 44100;
 %duration = 15;
 studentNumber = '2518504'; % String representing the student number
-    
-
 % Parameters
 pilotFreq = 19500; % Hz, known pilot frequency
 pilotDuration = 0.25; % Pilot tone duration in seconds
 pilotThreshold = 0.8; % Correlation threshold for detecting the pilot
 bufferSize = samplingRate; % Buffer size for real-time processing (1 second)
-
 % Create audio device reader for real-time capture
 reader = audioDeviceReader('SamplesPerFrame', bufferSize, 'SampleRate', samplingRate);
 %sprintf('Listening for Pilot Tone...')
@@ -20,12 +17,9 @@ reader = audioDeviceReader('SamplesPerFrame', bufferSize, 'SampleRate', sampling
 message= sprintf('Listening for Pilot Tone...');
 app.Label.Text = message;
 drawnow
-
 % Generate pilot tone reference
-
 tPilot = 0:1/samplingRate:pilotDuration - 1/samplingRate;
 pilotTone = sin(2 * pi * pilotFreq * tPilot);
-
 pilotDetected = false;
 signalToAnalyze = [];
 signalToAnalyzenon = [];
@@ -45,7 +39,6 @@ pilotThreshold = 0.8; % Correlation threshold for detecting the pilot
 bufferSize = samplingRate; % Buffer size for real-time processing (1 second)
 while ~pilotDetected
     audioBuffer = reader(); % Read audio from microphone
-    
     % Apply bandpass filter to reduce noise
     filteredBuffer1 = filter(bb1, a1, audioBuffer);
     filteredBuffer2 = filter(bb2, a2, audioBuffer);
@@ -67,27 +60,18 @@ while ~pilotDetected
         if pilotStartIndex > 0
             % Extract synchronized signal from the pilot start
             signalToAnalyze = filteredBuffer(pilotStartIndex + length(pilotTone):end);
-            signalToAnalyzenon = audioBuffer(pilotStartIndex+ length(pilotTone):end);
-                
+            signalToAnalyzenon = audioBuffer(pilotStartIndex+ length(pilotTone):end);           
             %minToneDuration = 0.4; % Minimum duration for a valid tone (in seconds)
-
             % Clean the signal using the STFT-based noise reduction
             windowLength = round(samplingRate * 0.5 / 4); % Window based on category 3 hop period
             overlapLength = round(windowLength * 0.5);
             fftLength = 2^nextpow2(windowLength);
             %signalToAnalyze = reduceNoiseUsingSTFT(signalToAnalyze, samplingRate, windowLength, overlapLength, fftLength, minToneDuration);
             %signalToAnalyzenon = reduceNoiseUsingSTFT(signalToAnalyzenon, samplingRate, windowLength, overlapLength, fftLength, minToneDuration);
-            
-        
         end
         break;
     end
 end
-
-
-
-
-
 % Continue recording for the specified duration
 while length(signalToAnalyze) < samplingRate * duration
     audioBuffer = reader();
@@ -99,34 +83,19 @@ while length(signalToAnalyze) < samplingRate * duration
     signalToAnalyze = [signalToAnalyze; filteredBuffer];
     signalToAnalyzenon = [signalToAnalyzenon ; audioBuffer];
 end
-
-
-
-
-
 % Truncate to the exact duration
 signalToAnalyze = signalToAnalyze(1:samplingRate * duration);
 signalToAnalyzenon = signalToAnalyzenon(1:samplingRate * duration);
-
-
 % Perform STFT to analyze signal spectrogram
 windowLength = round(samplingRate * 0.5 / 4); % Window based on category 3 hop period
 overlapLength = round(windowLength * 0.5);
 fftLength = 2^nextpow2(windowLength);
 [s, f, t] = stft(signalToAnalyze, samplingRate, 'Window', hann(windowLength), ...
-                 'OverlapLength', overlapLength, 'FFTLength', fftLength);
-
-
-
-
-
-
-
+                 'OverlapLength', overlapLength, 'FFTLength', fftLength)
 % Generate frequency tables for all categories
 freqTable1 = generateFrequencyTable(1, studentNumber);
 freqTable2 = generateFrequencyTable(2, studentNumber);
 freqTable3 = generateFrequencyTable(3, studentNumber);
-
 % Plot spectrogram
 %figure;
 %spectrogram(signalToAnalyze, hann(windowLength), overlapLength, fftLength, samplingRate, 'yaxis');
@@ -134,13 +103,11 @@ freqTable3 = generateFrequencyTable(3, studentNumber);
 %title('Received Signal Spectrogram');
 %xlabel('Time (s)');
 %ylabel('Frequency (Hz)');
-
 % 6. Analyze the first frequency segment
 [~, firstSegmentIdx] = min(abs(t - 0.5)); % First hop period after pilot
 firstSegmentMagnitudes = abs(s(:, firstSegmentIdx));
 [~, maxMagIdx] = max(firstSegmentMagnitudes);
 detectedFrequency = abs(f(maxMagIdx));
-
 % 7. Use detected frequency to identify category
 % Generate hop indices for all categories
 rng(42, 'twister');
@@ -149,48 +116,38 @@ rng(42, 'twister');
 hopIndicesCat2 = randi(length(freqTable2), 1, ceil((length(signalToAnalyze) / samplingRate) / 0.75));
 rng(42, 'twister');
 hopIndicesCat3 = randi(length(freqTable3), 1, ceil((length(signalToAnalyze) / samplingRate) / 0.5));
-
 % Initialize variables to store total differences
 totalDiffCat1 = 0;
 totalDiffCat2 = 0;
 totalDiffCat3 = 0;
-
 % Analyze all hops for each category
 categories = {1, 2, 3};
 hopPeriods = [1, 0.75, 0.5];
 freqTables = {freqTable1, freqTable2, freqTable3};
 hopIndicesList = {hopIndicesCat1, hopIndicesCat2, hopIndicesCat3};
-
 for catIdx = 1:3
     hopPeriod = hopPeriods(catIdx);
     freqTable = freqTables{catIdx};
     hopIndices = hopIndicesList{catIdx};
-    
     % Calculate number of hops
     numHops = length(hopIndices); 
-    
     % Analyze each hop
     for hopIdx = 1:numHops
         flag = 1;
         % Determine segment midpoint time
         startTime = (hopIdx - 1) * hopPeriod;
         endTime = hopIdx * hopPeriod;
-        midPoint = (startTime + endTime) / 2;
-        
+        midPoint = (startTime + endTime) / 2;      
         % Find the closest time index in the precomputed STFT
-        [~, midPointIdx] = min(abs(t - midPoint));
-        
+        [~, midPointIdx] = min(abs(t - midPoint));        
         % Find the frequency with maximum magnitude at the midpoint
         segmentMagnitudes = abs(s(:, midPointIdx));
         [~, maxMagIdx] = max(segmentMagnitudes);
-        detectedFreq = abs(f(maxMagIdx));
-        
+        detectedFreq = abs(f(maxMagIdx));        
         % Get the expected frequency for this hop from freqTable
-        expectedFreq = freqTable(hopIndices(hopIdx));
-        
+        expectedFreq = freqTable(hopIndices(hopIdx));        
         % Calculate frequency difference
-        freqDiff = abs(detectedFreq - expectedFreq);
-        
+        freqDiff = abs(detectedFreq - expectedFreq);       
         % Accumulate differences for this category
         if flag == 1
             if (catIdx ==1 ) && (freqDiff <= 110 && freqDiff >= 90)
@@ -203,36 +160,25 @@ for catIdx = 1:3
                 totalDiffCat3 = totalDiffCat3 + 1;
             else
                 flag = 0;
-    
             end
-
         end
     end
 end
-
 % Determine category with minimum total difference
 %[~, category] = min([totalDiffCat1, totalDiffCat2, totalDiffCat3]);
-
 % Display results
-
-
-
 %%
 [maxdiff,maxind] = max([totalDiffCat1,totalDiffCat2,totalDiffCat3]);
 category = maxind;
 %disp(['Detected Category: ', num2str(category)]);
-
 %currentMessages = app.TextArea.Value;
 message= sprintf([sprintf('Detected Category: '), num2str(category)]);
 %app.TextArea.Value =  [currentMessages; {message}];
 app.Label_3.Text = message;
 drawnow
-
 % Receiver function with p[ilot tone synchronization
 % Updated with FHSS decoding based on Table I
-
 % Existing code to detect category...
-
 % Define FHSS parameters based on category
 % Define FHSS parameter['Recommended: ',string(555555)]s based on category
 switch category
@@ -255,11 +201,9 @@ switch category
         freqCat = freqTable3(hopIndicesCat3(1:numHops));
         margin = 4 * deltaF; % Sadece ±200, ±400, ±600 ve ±800 aralığında sinyal kabul edilecek
 end
-
 % Divide the signal into segments based on hopPeriod
 %numHops = floor((length(signalToAnalyze) / samplingRate) / hopPeriod);
 decodedBinary = ""; % Initialize binary decoded message
-
 minf = +inf;
 maxf = -inf;
 for hopIdx = 1:numHops
@@ -267,10 +211,8 @@ for hopIdx = 1:numHops
     startTime = (hopIdx - 1) * hopPeriod;
     endTime = hopIdx * hopPeriod;
     midPoint = (startTime + endTime) / 2;
-    
     % Find the closest time index in the precomputed STFT
-    [~, midPointIdx] = min(abs(t - midPoint));
-    
+    [~, midPointIdx] = min(abs(t - midPoint));   
     % Find the frequency with maximum magnitude at the midpoint
     segmentMagnitudes = abs(s(:, midPointIdx));
     [~, maxMagIdx] = max(segmentMagnitudes);
@@ -278,12 +220,10 @@ for hopIdx = 1:numHops
     maxf= max(maxf,detectedFreq);
     minf = min(minf,detectedFreq);
     % Get the expected frequency for this hop from freqCat
-    expectedFreq = freqCat(hopIdx); 
-    
+    expectedFreq = freqCat(hopIdx);    
     % Calculate frequency difference and MK value
     freqDiff = detectedFreq - expectedFreq;
-    mk = round(freqDiff / deltaF);
-    
+    mk = round(freqDiff / deltaF); 
     % Decode binary message based on MK value
     if category == 1
         if mk == 1
@@ -321,18 +261,13 @@ for hopIdx = 1:numHops
                             decodedBinary = strcat(decodedBinary, binaryMap(7));
                         case -4
                             decodedBinary = strcat(decodedBinary, binaryMap(8));
-             end
-
-            
-            
+            end        
         end
     end
 end
-
 %ylim([minf/1e3-1, maxf/1e3+1]);
 rxspectrogram = {signalToAnalyze, hann(windowLength), overlapLength,fftLength,samplingRate,[minf/1e3-1, maxf/1e3+1]};
 rxspectrogramnon = {signalToAnalyzenon, hann(windowLength), overlapLength,fftLength,samplingRate,[minf/1e3-5, maxf/1e3+5]};
-
 % Display final decoded binary message
 %currentMessages = app.TextArea.Value;
 message= sprintf([sprintf('Decoded Message: '), char(decodedBinary)]);
@@ -340,16 +275,12 @@ message= sprintf([sprintf('Decoded Message: '), char(decodedBinary)]);
 app.Label_4.Text = message;
 drawnow
 %disp(['Decoded Binary Message: ', decodedBinary]);
-
-
-
  %%
 function frequencyTable = generateFrequencyTable(category, studentNumber)
     % Extract student number components
     N7 = str2double(studentNumber(end));
     N6 = str2double(studentNumber(end-1));
-    N5 = str2double(studentNumber(end-2));
-    
+    N5 = str2double(studentNumber(end-2));  
     % Frequency table for each category
     switch category
         case 1
@@ -369,27 +300,19 @@ function frequencyTable = generateFrequencyTable(category, studentNumber)
             error('Invalid category. Choose 1, 2, or 3.');
     end
 end
-
-
-
-
 %%
 % Function to remove noise based on STFT analysis
 function signalCleaned = reduceNoiseUsingSTFT(signal, samplingRate, windowLength, overlapLength, fftLength, minDuration)
     % Perform STFT to analyze signal
     [ss, ff, tt] = stft(signal, samplingRate, 'Window', hann(windowLength), ...
                      'OverlapLength', overlapLength, 'FFTLength', fftLength);
-
     % Calculate the magnitude spectrogram
     magnitudeSpectrogram = abs(ss);
-
     % Threshold to identify sustained tones (minimum duration in seconds)
     minFrames = ceil(minDuration / (tt(2) - tt(1))); % Minimum number of frames
-
     % Identify frequencies that persist for at least minFrames
     [numFreqBins, numTimeFrames] = size(magnitudeSpectrogram);
     persistentTones = false(numFreqBins, numTimeFrames);
-
     for freqIdx = 1:numFreqBins
         % Find time frames where the magnitude exceeds a threshold (e.g., 10% of max)
         threshold = 0 * max(magnitudeSpectrogram(freqIdx, :));
@@ -399,13 +322,10 @@ function signalCleaned = reduceNoiseUsingSTFT(signal, samplingRate, windowLength
         activeFrames = bwareaopen(activeFrames, minFrames);
         persistentTones(freqIdx, :) = activeFrames;
     end
-
     % Zero out frequencies that do not persist
     cleanedSpectrogram = ss .* persistentTones;
-
     % Reconstruct the time-domain signal from the cleaned spectrogram
     signalCleaned = istft(cleanedSpectrogram, samplingRate, 'Window', hann(windowLength), ...
                           'OverlapLength', overlapLength, 'FFTLength', fftLength);
 end
-
 end
