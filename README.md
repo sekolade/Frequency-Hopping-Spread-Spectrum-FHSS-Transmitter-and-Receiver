@@ -106,9 +106,7 @@ Pilot tones are transmitted before the actual signal to synchronize the transmit
   - Decoded Message: `101101`
   - Spectrograms:
 
-    - Without Noise Reduction:
-      ![Receiver Spectrogram Without Noise](figures/receiver_spectrogram_no_noise.png)
-    
+
     - With Noise Reduction:
       ![Receiver Spectrogram With Noise](figures/receiver_spectrogram_with_noise.png)
 
